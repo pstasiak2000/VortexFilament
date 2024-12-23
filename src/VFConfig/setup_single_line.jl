@@ -1,11 +1,11 @@
-#Singleton for straight line
+### Singleton for straight line
+
+export SingleLine
 struct SingleLine <: InitCond
 end
 Adapt.@adapt_structure SingleLine
 
-export SingleLine
 
-#Generate initial pcount
 function getInitPcount(::SingleLine,δ)
     println("-----------------------------------------------------")
     println("-------- Initialising straight line vortex ----------")
@@ -16,22 +16,21 @@ function getInitPcount(::SingleLine,δ)
 end
 
 #Generate the structure
-function init!(f_xyz,f_infront,f_behind,f_u1,f_u2,::SingleLine)
-    pcount = length(f_behind)
+function init!(f,fint,pcount,::SingleLine)
     index = threadIdx().x
-    f_xyz[index,1] = 0.0
-    f_xyz[index,2] = 0.0
-    f_xyz[index,3] = (Float32(index)-0.5)*2π/pcount
+    f[1,index] = 0.0
+    f[2,index] = 0.0
+    f[3,index] = -π + (Float32(index)-0.5)*2π/pcount
 
     if index == 1 #The first element
-        f_behind[index] = pcount
-        f_infront[index] = index+1
+        fint[2,index] = pcount
+        fint[1,index] = index+1
     elseif index == pcount #The last element
-        f_behind[index] = index - 1
-        f_infront[index] = 1
+        fint[2,index] = index - 1
+        fint[1,index] = 1
     else 
-        f_behind[index] = index - 1
-        f_infront[index] = index + 1
+        fint[2,index] = index - 1
+        fint[1,index] = index + 1
     end
     return nothing
 end
