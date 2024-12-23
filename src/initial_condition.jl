@@ -1,20 +1,20 @@
 abstract type InitCond end #Super type of all initial conditions
 
 include("./VFConfig/setup_single_line.jl")
+include("./VFConfig/setup_single_ring.jl")
 
 
 
 
-
-function initialiseVortex!(f_xyz,f_infront,f_behind,f_u1,f_u2,IC::InitCond)
+function initialiseVortex!(f,fint,pcount,IC::InitCond)
     @assert supertype(typeof(IC)) == InitCond
-    pcount = length(f_behind)
-    kernel = @cuda launch=false init!(f_xyz,f_infront,f_behind,f_u1,f_u2,IC)
+    kernel = @cuda launch=false init!(f,fint,pcount,IC)
     config = launch_configuration(kernel.fun)
     threads = min(pcount, config.threads)
     blocks = cld(pcount,threads)
-
+    println(blocks)
+    println(threads)
     CUDA.@sync begin
-        kernel(f_xyz,f_infront,f_behind,f_u1,f_u2, IC; threads, blocks)
+        kernel(f,fint,pcount, IC; threads, blocks)
     end
 end

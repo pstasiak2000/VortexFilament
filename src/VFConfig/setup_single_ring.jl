@@ -1,28 +1,29 @@
-### Singleton for straight line
+export SingleRing
 
-export SingleLine
-struct SingleLine <: InitCond
+struct SingleRing{A} <: InitCond
+    Radius::A
 end
-Adapt.@adapt_structure SingleLine
+Adapt.@adapt_structure SingleRing
 
-
-function getInitPcount(::SingleLine,δ)
+#Obtains initial number of vortex points
+function getInitPcount(IC::SingleRing,δ)
     println("-----------------------------------------------------")
     println("-------- Initialising straight line vortex ----------")
     println("-----------------------------------------------------")
     println("Changing size of pcount to fit with box_length and δ ")
     println("-: δ=$δ                                              ")
-    return Int32(round((2π)/(0.75*δ)))
+    tmp = ceil(2π*IC.Radius/(0.75*δ))
+    return Int32(tmp)
 end
 
-#Generate the structure
-function init!(f,fint,pcount,::SingleLine)
+#Initialises the vortex configuration
+function init!(f,fint,pcount,IC::SingleRing)
     index = (blockIdx().x - 1) * blockDim().x + threadIdx().x
     stride = gridDim().x * blockDim().x
     for idx ∈ index:stride:pcount
         f[1,idx] = 0.0
-        f[2,idx] = 0.0
-        f[3,idx] = -π + (Float32(idx)-0.5)*2π/pcount
+        f[2,idx] = IC.Radius * sin(π * Float32((2*idx - 1))/Float32(pcount))
+        f[3,idx] = IC.Radius * cos(π * Float32((2*idx - 1))/Float32(pcount))
 
         if index == 1 #The first element
             fint[2,idx] = pcount
