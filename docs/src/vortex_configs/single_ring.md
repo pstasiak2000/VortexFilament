@@ -1,6 +1,7 @@
 # Single vortex ring
 
 *Initialises a single, vortex ring of size ``R``.*
+<<<<<<< HEAD
 
 ![ Single vortex ring](../assets/single_ring.svg)
 
@@ -16,3 +17,5 @@ Vortex ring in the ``yz``-plane, propagating in the ``x`` direction. Use the fie
 #Set an initial condition of ring size 1.0
 IC = VortexFilament.SingleRing(1.0f0)
 ```
+=======
+>>>>>>> b28cc71f9ab0bd7658202bc3e7a22387ef04881e

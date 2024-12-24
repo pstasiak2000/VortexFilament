@@ -17,6 +17,7 @@ end
 
 #Generate the structure
 function init!(f,fint,pcount,::SingleLine)
+<<<<<<< HEAD
     index = (blockIdx().x - 1) * blockDim().x + threadIdx().x
     stride = gridDim().x * blockDim().x
     for idx ∈ index:stride:pcount
@@ -34,6 +35,22 @@ function init!(f,fint,pcount,::SingleLine)
             fint[2,idx] = idx - 1
             fint[1,idx] = idx + 1
         end
+=======
+    index = threadIdx().x
+    f[1,index] = 0.0
+    f[2,index] = 0.0
+    f[3,index] = -π + (Float32(index)-0.5)*2π/pcount
+
+    if index == 1 #The first element
+        fint[2,index] = pcount
+        fint[1,index] = index+1
+    elseif index == pcount #The last element
+        fint[2,index] = index - 1
+        fint[1,index] = 1
+    else 
+        fint[2,index] = index - 1
+        fint[1,index] = index + 1
+>>>>>>> b28cc71f9ab0bd7658202bc3e7a22387ef04881e
     end
     return nothing
 end
